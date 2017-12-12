@@ -17,55 +17,53 @@ public start
 
 ;sectiunile programului, date, respectiv cod
 .data
-filename db "fisier.dat", 0
-mode_rb db "rb", 0
-format db "%c", 0
-buffer db 0
-matrix db 0
-mesaj db "caca", 13 ,10
-format1 db "caca", 0
+format1  db "Introduceti o operatie cu matrici:"
+filename db "A.txt", 0
+mode_rb  db "rb", 0
+format2  db "%c", 0
+buffer   db 0
+matrix   db 0 
 
 .code
 start:
-	;apelam fopen
+	
+	
+	
 	push offset mode_rb
 	push offset filename
 	call fopen
 	add esp, 8
-	mov esi, eax ;salvam pointer-ul la fisier
-	
-	;punem pe stiva parametrii pentru fread
-	push esi ;stream
-	push 1 ;count
-	push 1 ;size
+	mov esi, eax
+	mov ebx, 0
+	push esi
+	push 1
+	push 1
 	push offset buffer
-bucla_citire:
+bucla_citire: 
 	call fread
 	test eax, eax
 	jz inchidere_fisier
-	xor eax, eax ;facem eax sa fie 0
+	cmp buffer, 13
+	jz continuare_bucla_citire
+	cmp buffer, 10
+	jz continuare_bucla_citire
+	mov cl, buffer
+	mov matrix[ebx], cl
+	inc ebx
+continuare_bucla_citire:
+	xor eax, eax
 	mov al, buffer
-	cmp buffer, 52
-	je citire_speciala
 	push eax
-	push offset format
+	push offset format2
 	call printf
 	add esp, 8
 	jmp bucla_citire
-	
-citire_speciala:
-	push offset format1
-	call printf
-	add esp, 4
-	jmp bucla_citire
-	
 inchidere_fisier:
-	add esp, 16 ;curatam stiva de la fread
-	;apelam fclose
-	push esi ;stream
+	add esp, 16
+	push esi
 	call fclose
 	add esp, 4
-
+	
 	push 0
 	call exit
 end start
