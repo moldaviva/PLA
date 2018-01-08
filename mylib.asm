@@ -78,11 +78,15 @@ operatiee macro mesaj, filename, format, mode
 	mov ecx, 0
 endm
 
-citire_matrice macro matrix, eticheta1, eticheta2, eticheta3
+citire_matrice macro matrix, eticheta1, eticheta2, eticheta3, eticheta4
 eticheta1:
 	fscanff buffer, format3
 	test eax, eax
 	jl eticheta2
+	cmp buffer, 0
+	jge eticheta4
+	mov matrix_s[ebx], 1
+eticheta4:
 	mov cl, buffer
  	mov matrix[ebx], cl
 	mov edx, esi
@@ -98,21 +102,21 @@ eticheta2:
 	jmp eticheta3
 endm
 
-afisare_matrice macro matrix, format, minus, endline, eticheta1, eticheta2, eticheta3, eticheta4, filename, nr_linii, nr_coloane
+afisare_matrice macro matrix, format, endline, eticheta1, eticheta2, eticheta3, eticheta4, filename, nr_linii, nr_coloane
 	mov cl, matrix_A[0]
 	mov eax, ecx
 	mul ecx
 	mov ecx, eax
 	mov nr_linii, ecx
-	mov cl, matrix[0]
+	mov cl, matrix_A[0]
 	mov nr_coloane, ecx
 	mov ebx, 0
 eticheta1:
 	inc ebx
-	cmp matrix_s[ebx], 0
-	jz eticheta4
-	fprint1 minus
-eticheta4:	
+	cmp matrix_s[ebx], 1
+	jnz eticheta4
+	fprint2 minus
+eticheta4:
 	mov al, matrix[ebx]
 	fprint1 eax, format
 	cmp ebx, nr_linii
